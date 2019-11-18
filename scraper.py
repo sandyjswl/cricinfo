@@ -7,25 +7,26 @@ import sqlite3
 import sys
 
 
-def playerName():
+def playerName(url):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
     # In[39]:
+    # url = "http://www.espncricinfo.com/india/content/player/34102.html"
 
     # html = urllib.request.urlopen(url, context=ctx).read()
-    text_file = open("links.txt", "r")
+    # text_file = open("links.txt", "r")
+    #
+    # lines = text_file.read().split('\n')
+    #
+    # # print(lines)
 
-    lines = text_file.read().split('\n')
-
-    # print(lines)
-
-    for url in lines:
-        html = urllib.request.urlopen(url, context=ctx).read()
-        bs = BeautifulSoup(html, "lxml")
-        names = bs.find_all("h1");
-        print(names[1].text)
+    # for url in lines:
+    html = urllib.request.urlopen(url, context=ctx).read()
+    bs = BeautifulSoup(html, "lxml")
+    names = bs.find_all("p",{"class":"ciPlayerinformationtxt"});
+    return names[0].text.split("\n")[1]
 
 def getFullLink(link):
     return "http://www.espncricinfo.com"+link
@@ -46,10 +47,10 @@ def listOfPlayers():
         # print(r)
         for i in r:
             link = (i.find("a").get("href"))
-            name = (i.text)
+            name = playerName(getFullLink(link))
             res[name] =getFullLink(link)
     # print(res)
     return res
 
 if __name__ == '__main__':
-    listOfPlayers()
+    print(listOfPlayers())
